@@ -1,4 +1,4 @@
-const VERSI = 'kuis-murojaah-v1';
+const VERSI = 'kuis-murojaah-v2';
 const FILE_APP = [
   './', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png',

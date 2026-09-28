@@ -117,6 +117,15 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:6px 4px;border-radius:10px;font:600 11px var(--sans);color:var(--muted);cursor:pointer}
 .tab-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
 .tab-item.active{color:var(--primary)}
+.lainnya-item{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);cursor:pointer;text-decoration:none;color:var(--ink)}
+.lainnya-item:active{transform:scale(.99)}
+.lainnya-ic{flex:none;width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--primary),#134D3D);display:flex;align-items:center;justify-content:center;color:var(--on-primary)}
+.lainnya-ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lainnya-txt{flex:1;min-width:0}
+.lainnya-txt b{display:block;font:700 17px var(--serif)}
+.lainnya-txt span{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.lainnya-chev{flex:none;color:var(--muted)}
+.lainnya-chev svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
 .wrap{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .bstat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .bstat{aspect-ratio:1/1;background:var(--tile);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px}
@@ -388,10 +397,23 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
     </div>
   </div>
 
+  <div id="view-lainnya" class="hidden">
+    <div class="hero">
+      <h1>App Lainnya</h1>
+      <p>Aplikasi pendamping untuk memperkaya muraja'ah Anda.</p>
+    </div>
+    <a class="lainnya-item" href="https://quran144surat-create.github.io/quran/index.html" target="_blank" rel="noopener">
+      <span class="lainnya-ic"><svg viewBox="0 0 24 24"><path d="M12 6.5c-2-1.3-4.5-2-7-2v13c2.5 0 5 .7 7 2 2-1.3 4.5-2 7-2V4.5c-2.5 0-5 .7-7 2z"/><path d="M12 6.5v13"/></svg></span>
+      <span class="lainnya-txt"><b>Qur'an</b><span>Baca mushaf lengkap 30 juz</span></span>
+      <span class="lainnya-chev"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>
+    </a>
+  </div>
+
 </div>
 
 <nav class="tabbar" id="tabbar">
   <button class="tab-item" id="tabBeranda" data-tab="beranda"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5"/></svg><span>Beranda</span></button>
+  <button class="tab-item" id="tabLainnya" data-tab="lainnya"><svg viewBox="0 0 24 24"><path d="M12 6.5c-2-1.3-4.5-2-7-2v13c2.5 0 5 .7 7 2 2-1.3 4.5-2 7-2V4.5c-2.5 0-5 .7-7 2z"/><path d="M12 6.5v13"/></svg><span>Lainnya</span></button>
   <button class="tab-item" id="tabPengaturan" data-tab="pengaturan"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1.04 1.56V21a2 2 0 01-4 0v-.09A1.7 1.7 0 008.96 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 004.6 15a1.7 1.7 0 00-1.56-1.04H3a2 2 0 010-4h.09A1.7 1.7 0 004.6 8.96a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008.96 4.6a1.7 1.7 0 001.04-1.56V3a2 2 0 014 0v.09a1.7 1.7 0 001.04 1.56 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0019.4 8.96a1.7 1.7 0 001.56 1.04H21a2 2 0 010 4h-.09a1.7 1.7 0 00-1.56 1.04z"/></svg><span>Pengaturan</span></button>
 </nav>
 
@@ -537,10 +559,11 @@ let QUIZ=null;
 const $=id=>document.getElementById(id);
 const view=name=>{
   if(name!=='quiz')stopAyahAudio();
-  ['loading','beranda','home','quiz','result','history','pengaturan','pengaturan-audio','pengaturan-audio-qori'].forEach(v=>$('view-'+v).classList.toggle('hidden',v!==name));
+  ['loading','beranda','home','quiz','result','history','lainnya','pengaturan','pengaturan-audio','pengaturan-audio-qori'].forEach(v=>$('view-'+v).classList.toggle('hidden',v!==name));
   const tb=$('tabbar');if(tb)tb.classList.toggle('hidden',name==='loading'||name==='quiz');
   const tBeranda=$('tabBeranda');if(tBeranda)tBeranda.classList.toggle('active',name==='beranda');
   const tPengaturan=$('tabPengaturan');if(tPengaturan)tPengaturan.classList.toggle('active',name.indexOf('pengaturan')===0);
+  const tLainnya=$('tabLainnya');if(tLainnya)tLainnya.classList.toggle('active',name==='lainnya');
 };
 
 /* ================= Daftar qori & qori aktif ================= */
@@ -1296,6 +1319,7 @@ $('btnKirimJawaban').onclick=submitAnswer;
 $('btnRetry').onclick=startQuiz;
 $('btnHome').onclick=()=>view('home');
 $('tabBeranda').onclick=()=>view('beranda');
+$('tabLainnya').onclick=()=>view('lainnya');
 $('tabPengaturan').onclick=()=>view('pengaturan');
 $('rowAudio').onclick=()=>view('pengaturan-audio');
 $('rowDownloadMushaf').onclick=()=>{location.href='download-juz.html';};
