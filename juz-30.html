@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E4A3B">
+<title>Mushaf · Juz 30</title>
+<style>
+:root{--bg:#F2F1E7;--surface:#FBFAF4;--ink:#10231D;--muted:#586C63;--line:#DBDED0;--primary:#0E4A3B;--on:#F8F5E8;--gold:#EDE1BC;--goldink:#7A5D12;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#0A1512;--surface:#101F1A;--ink:#ECE8D8;--muted:#9DB0A6;--line:#203429;--primary:#1F7A60;--on:#F4F1E4;--gold:#3A3219;--goldink:#D9B96B}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;direction:rtl;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+h1{font-size:16px;margin:0;flex:1}
+button,select{font:600 13.5px system-ui,sans-serif;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 12px}
+button.p{background:var(--primary);color:var(--on);border-color:var(--primary)}
+.pill{background:var(--gold);color:var(--goldink);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
+#track{flex:1;min-height:0;display:flex;direction:rtl;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+#track::-webkit-scrollbar{display:none}
+.pg{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:center;scroll-snap-stop:always;display:flex;align-items:center;justify-content:center;padding:6px;text-align:center;color:var(--muted)}
+.pg img{max-width:100%;max-height:100%;object-fit:contain}
+.pg .msg{max-width:320px;padding:0 16px}
+#ind{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--primary) 88%,transparent);color:var(--on);border-radius:99px;padding:5px 14px;font-size:12.5px;font-weight:600;pointer-events:none}
+</style></head><body>
+<header>
+  <button id="back">› Kuis</button>
+  <h1>Juz 30</h1><span class="pill" id="info" hidden></span>
+  <select id="sel" aria-label="Halaman"></select>
+</header>
+<main id="track"></main>
+<div id="ind"></div>
+<script src="config.js"></script>
+<script>
+const JUZ=30, C=CFG, $=id=>document.getElementById(id);
+const S=C.juzStart[JUZ-1], E=JUZ<30?C.juzStart[JUZ]-1:C.total;
+const src=p=>C.folder+'/'+String(p).padStart(C.pad,'0')+'.'+C.ext;
+const juzOf=p=>{for(let j=29;j>=0;j--)if(p>=C.juzStart[j])return j+1;return 1};
+function pageOfAyah(s,a){
+  const g=C.ay.slice(0,s-1).reduce((x,y)=>x+y,0)+a; let lo=0,hi=C.total-1;
+  while(lo<hi){const m=(lo+hi+1)>>1;if(C.ps[m]<=g)lo=m;else hi=m-1}
+  return lo+1;
+}
+const q=new URLSearchParams(location.search), s=+q.get('s'), a=+q.get('a');
+let p=s&&a?pageOfAyah(s,a):(+q.get('p')||S);
+p=Math.min(Math.max(p,1),C.total);
+if(juzOf(p)!==JUZ) location.replace('juz-'+juzOf(p)+'.html'+location.search);
+const ayahPage=s&&a?pageOfAyah(s,a):0;
+if(s&&a){$('info').textContent='QS '+s+':'+a;$('info').hidden=false}
+
+const track=$('track'), cells={};
+function edgeCell(text,target){
+  const d=document.createElement('div');d.className='pg';
+  d.innerHTML='<div class="msg"><p></p><button class="p"></button></div>';
+  d.querySelector('p').textContent=text;
+  const b=d.querySelector('button');b.textContent=target.label;b.onclick=()=>location.href=target.url;
+  return d;
+}
+// Urutan DOM = urutan baca Arab (direction:rtl): elemen pertama ada di paling KANAN.
+if(JUZ>1) track.appendChild(edgeCell('Awal juz ini. Lanjut mundur?',{label:'‹ Juz '+(JUZ-1)+' (hal. '+(S-1)+')',url:'juz-'+(JUZ-1)+'.html?p='+(S-1)}));
+for(let i=S;i<=E;i++){
+  const d=document.createElement('div');d.className='pg';d.dataset.p=i;cells[i]=d;track.appendChild(d);
+  $('sel').add(new Option('Hal. '+i,i));
+}
+if(JUZ<30) track.appendChild(edgeCell('Akhir juz ini.',{label:'Juz '+(JUZ+1)+' (hal. '+(E+1)+') ›',url:'juz-'+(JUZ+1)+'.html?p='+(E+1)}));
+
+function loadImg(d){
+  if(d.dataset.done)return;d.dataset.done=1;const n=+d.dataset.p;
+  const im=new Image();im.alt='Halaman '+n;
+  im.onerror=()=>{d.innerHTML='<div class="msg">Halaman '+n+' belum tersedia. Buka lewat alamat situs (https), lalu unduh dulu di Pengaturan › Download Mushaf per Juz.</div>'};
+  im.src=src(n);d.appendChild(im);
+}
+// muat halaman yang dekat layar (±1 halaman)
+const loadObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)loadImg(e.target)}),{root:track,rootMargin:'0px 100% 0px 100%'});
+// halaman yang sedang tampil penuh = halaman aktif
+function setCur(n,scroll){
+  p=n;$('sel').value=n;
+  $('ind').textContent='Hal. '+n+' / '+C.total;
+  history.replaceState(null,'','?p='+n+(ayahPage&&n===ayahPage?'&s='+s+'&a='+a:''));
+}
+const curObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.target.dataset.p)setCur(+e.target.dataset.p)}),{root:track,threshold:0.6});
+for(let i=S;i<=E;i++){loadObs.observe(cells[i]);curObs.observe(cells[i])}
+function goto(n,smooth){const c=cells[n];if(c)c.scrollIntoView({behavior:smooth?'smooth':'instant',inline:'center',block:'nearest'})}
+if(p<S||p>E)p=S;
+loadImg(cells[p]);setCur(p);goto(p,false);
+$('sel').onchange=e=>goto(+e.target.value,false);
+$('back').onclick=()=>document.referrer?history.back():location.href='index.html';
+// Panah keyboard: kiri = halaman berikutnya (searah mushaf Arab)
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'&&p<E)goto(p+1,true);
+  if(e.key==='ArrowRight'&&p>S)goto(p-1,true);
+});
+if(location.protocol.startsWith('http')&&navigator.serviceWorker)navigator.serviceWorker.register('sw.js');
+</script></body></html>
