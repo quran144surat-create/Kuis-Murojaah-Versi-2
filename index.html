@@ -93,6 +93,21 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
 .quiz-q-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
 #quizSubmitRow{position:sticky;bottom:10px}
 #btnKirimJawaban:disabled{opacity:.45}
+.juz-pick{margin:0 0 14px}
+.juz-sum{appearance:none;display:flex;align-items:center;gap:8px;width:100%;background:var(--field);border:1px solid var(--line2);border-radius:12px;padding:11px 14px;font:14px var(--sans);color:var(--ink);cursor:pointer;text-align:left}
+.juz-sum-l{color:var(--muted);font-size:12px}
+.juz-sum-v{flex:1;font-weight:600}
+.juz-sum svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s}
+.juz-sum[aria-expanded=true] svg{transform:rotate(180deg)}
+.juz-panel{margin-top:10px}
+.juz-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.juz-chip{appearance:none;border:1px solid transparent;background:var(--surface2);color:var(--ink);border-radius:999px;padding:7px 0;font:500 13px var(--sans);cursor:pointer}
+.juz-chip.full{background:var(--ok-soft)}
+.juz-chip.part{border-color:var(--warn)}
+.juz-chip.sel{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.juz-tools{display:flex;align-items:center;gap:2px;margin-top:8px;font-size:11px;color:var(--muted)}
+.juz-mini{appearance:none;border:none;background:none;color:var(--primary);font:600 12px var(--sans);padding:4px 6px 4px 0;margin-right:6px;cursor:pointer}
+.juz-legend{margin-left:auto}
 .pill{display:inline-block;background:var(--gold-soft);color:var(--gold-ink);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
 .qori-active-pill{appearance:none;border:none;cursor:pointer;border-radius:99px;padding:4px 12px;font:600 12px var(--sans);flex:none}
 .qori-active-pill.active{background:var(--em);color:var(--on-primary);font-weight:800;cursor:default;box-shadow:0 0 0 3px color-mix(in srgb,var(--em) 25%,transparent),0 0 10px color-mix(in srgb,var(--em) 55%,transparent)}
@@ -758,6 +773,7 @@ function startQuiz(){
     const shuffled=pool.slice().sort(()=>Math.random()-0.5).slice(0,n);
     QUIZ={mode,items:shuffled,idx:0,correct:0,detail:[]};
   }
+  QUIZ.owner=historyOwner();
   view('quiz');
   renderQuestion();
 }
@@ -953,13 +969,17 @@ function finishQuiz(){
   view('result');
 }
 
+function historyOwner(){
+  return (getAppMode()==='multi'&&hasMultiData()&&ACTIVE_SANTRI)?('santri:'+ACTIVE_SANTRI):'personal';
+}
 function saveHistory(score,total){
   const key='hf-muraja-ah-history';
   let hist=[];try{hist=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){}
   // Simpan ayat global (g) yang dijawab salah, supaya bisa ditampilkan lagi nanti di Riwayat
   const wrong=(QUIZ.detail||[]).filter(d=>!d.ok).map(d=>QUIZ.mode==='mutasyabihat'?d.q.g:d.q);
-  hist.unshift({date:new Date().toISOString(),score,total,mode:QUIZ.mode,level:QUIZ.level||null,wrong});
-  hist=hist.slice(0,100);
+  hist.unshift({date:new Date().toISOString(),score,total,mode:QUIZ.mode,level:QUIZ.level||null,wrong,owner:QUIZ.owner||historyOwner()});
+  const cnt={};
+  hist=hist.filter(h=>{const o=h.owner||'personal';cnt[o]=(cnt[o]||0)+1;return cnt[o]<=100;});
   localStorage.setItem(key,JSON.stringify(hist));
 }
 function modeLabel(h){
@@ -981,14 +1001,21 @@ function toggleHistDetail(i){
 }
 function renderHistory(){
   let hist=[];try{hist=JSON.parse(localStorage.getItem('hf-muraja-ah-history')||'[]');}catch(e){}
-  $('historyList').innerHTML = hist.length
+  const owner=historyOwner();
+  hist=hist.filter(h=>(h.owner||'personal')===owner);
+  let who='';
+  if(owner!=='personal'){
+    const sn=SANTRI_LIST&&SANTRI_LIST.santriList&&SANTRI_LIST.santriList.find(x=>x.id===ACTIVE_SANTRI);
+    if(sn&&sn.nama)who='<p class="muted" style="margin:0 0 10px;font-size:13px">Riwayat: '+String(sn.nama).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';
+  }
+  $('historyList').innerHTML = who + (hist.length
     ? hist.map((h,i)=>{
         const hasDetail=Array.isArray(h.wrong);
         const toggleBtn=hasDetail?`<button type="button" class="hist-toggle" onclick="toggleHistDetail(${i})">Detail</button>`:'';
         return `<div class="hist-row"><span>${new Date(h.date).toLocaleDateString('id-ID')} · ${modeLabel(h)}</span><span>${h.score}/${h.total}${toggleBtn}</span></div>`
           +(hasDetail?`<div id="histDetail${i}" class="hist-detail hidden">${wrongDetailHtml(h.wrong)}</div>`:'');
       }).join('')
-    : '<p class="muted center">Belum ada riwayat kuis.</p>';
+    : '<p class="muted center">Belum ada riwayat kuis.</p>');
 }
 
 /* ================= Setup santri (mode lembaga) ================= */
@@ -1141,6 +1168,65 @@ function fmtBytes(n){
 }
 function makeQoriManager(cfg){
   let running=false, cancel=false;
+  let cached=new Set();
+  const sel=new Set();
+  const DL_ICON='<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>';
+  function juzAyahRange(j){
+    const p1=JUZ_PAGE_START[j-1], p2=(j<30)?JUZ_PAGE_START[j]-1:604;
+    return [PS[p1],PE[p2]];
+  }
+  const btnEl=$(cfg.btnId);
+  const pick=document.createElement('div');pick.className='juz-pick';
+  pick.innerHTML='<button type="button" class="juz-sum" aria-expanded="false"><span class="juz-sum-l">Juz</span><span class="juz-sum-v">Semua 30 juz</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="juz-panel hidden"><div class="juz-grid"></div><div class="juz-tools"><button type="button" class="juz-mini" data-a="all">Pilih semua</button><button type="button" class="juz-mini" data-a="none">Kosongkan</button><span class="juz-legend">hijau lengkap · garis sebagian</span></div></div>';
+  btnEl.parentElement.parentElement.insertBefore(pick,btnEl.parentElement);
+  const grid=pick.querySelector('.juz-grid');
+  const sumBtn=pick.querySelector('.juz-sum'), sumV=pick.querySelector('.juz-sum-v'), panel=pick.querySelector('.juz-panel');
+  function setOpen(open){panel.classList.toggle('hidden',!open);sumBtn.setAttribute('aria-expanded',open?'true':'false');}
+  (window.JUZ_CLOSERS=window.JUZ_CLOSERS||[]).push(()=>setOpen(false));
+  sumBtn.onclick=()=>{const open=panel.classList.contains('hidden');(window.JUZ_CLOSERS||[]).forEach(f=>f());setOpen(open);};
+  function sumText(){
+    const n=sel.size;
+    if(!n||n===30)return 'Semua 30 juz';
+    const a=Array.from(sel).sort((x,y)=>x-y);
+    return n<=4?('Juz '+a.join(', ')):(n+' juz dipilih');
+  }
+  const chips=[];
+  for(let j=1;j<=30;j++){
+    const c=document.createElement('button');c.type='button';c.className='juz-chip';c.textContent=j;
+    c.onclick=()=>{if(running)return;if(sel.has(j))sel.delete(j);else sel.add(j);paint();};
+    grid.appendChild(c);chips.push(c);
+  }
+  pick.querySelector('[data-a=all]').onclick=()=>{if(running)return;for(let j=1;j<=30;j++)sel.add(j);paint();};
+  pick.querySelector('[data-a=none]').onclick=()=>{if(running)return;sel.clear();paint();};
+  function updateBtnLabels(){
+    const part=sel.size>0&&sel.size<30;
+    btnEl.innerHTML=DL_ICON+(part?'Unduh Juz Terpilih':'Unduh Audio 30 Juz');
+    $(cfg.delBtnId).textContent=part?'Hapus Juz Terpilih':'Hapus audio tersimpan';
+  }
+  function paint(){
+    sumV.textContent=sumText();
+    chips.forEach((c,i)=>{
+      const j=i+1,r=juzAyahRange(j);let n=0;
+      for(let g=r[0];g<=r[1];g++)if(cached.has(g))n++;
+      const t=r[1]-r[0]+1;
+      c.classList.toggle('sel',sel.has(j));
+      c.classList.toggle('full',n===t);
+      c.classList.toggle('part',n>0&&n<t);
+      c.setAttribute('aria-pressed',sel.has(j)?'true':'false');
+      c.title='Juz '+j+' · '+n+'/'+t+' ayat tersimpan';
+    });
+    if(!running)updateBtnLabels();
+  }
+  async function getCached(){
+    try{
+      const db=await openDB();
+      return await new Promise((res,rej)=>{
+        const req=db.transaction('kv','readonly').objectStore('kv').getAllKeys();
+        req.onsuccess=()=>{const o=new Set();req.result.forEach(k=>{if(typeof k==='string'&&k.indexOf(cfg.keyPrefix)===0){const g=+k.slice(cfg.keyPrefix.length);if(g)o.add(g);}});res(o);};
+        req.onerror=()=>rej(req.error);
+      });
+    }catch(e){return new Set();}
+  }
   async function getInfo(){
     try{const db=await openDB();return (await idbGet(db,cfg.infoKey))||{count:0,bytes:0};}
     catch(e){return {count:0,bytes:0};}
@@ -1148,11 +1234,12 @@ function makeQoriManager(cfg){
   async function refresh(){
     const total=AYTOT;
     const info=await getInfo();
+    cached=await getCached();
     const statusEl=$(cfg.statusId), btn=$(cfg.btnId), delBtn=$(cfg.delBtnId);
     if(!statusEl||!btn)return;
     delBtn.classList.toggle('hidden', info.count===0 || running);
     if(running)return;
-    btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>Unduh Audio 30 Juz';
+    paint();
     statusEl.classList.remove('none','partial','full');
     btn.disabled=false;
     if(info.count===0){
@@ -1168,9 +1255,12 @@ function makeQoriManager(cfg){
   }
   async function download(){
     if(running)return;
-    const ayat=[];for(let g=1;g<=AYTOT;g++)ayat.push(g);
+    const ayat=[];
+    const juzList=sel.size?Array.from(sel).sort((a,b)=>a-b):Array.from({length:30},(_,i)=>i+1);
+    juzList.forEach(j=>{const r=juzAyahRange(j);for(let g=r[0];g<=r[1];g++)ayat.push(g);});
     if(!ayat.length)return;
     running=true;cancel=false;
+    setOpen(false);
     const btn=$(cfg.btnId), bar=$(cfg.barId), fill=$(cfg.fillId), statusEl=$(cfg.statusId);
     btn.textContent='Batalkan';
     $(cfg.delBtnId).classList.add('hidden');
@@ -1204,6 +1294,21 @@ function makeQoriManager(cfg){
   }
   async function del(){
     const db=await openDB();
+    if(sel.size){
+      let info=(await idbGet(db,cfg.infoKey))||{count:0,bytes:0};
+      const keys=[];
+      sel.forEach(j=>{const r=juzAyahRange(j);for(let g=r[0];g<=r[1];g++)keys.push(g);});
+      for(const g of keys){
+        const key=cfg.keyPrefix+g;
+        const blob=await idbGet(db,key);
+        if(!blob)continue;
+        await new Promise((res,rej)=>{const q=db.transaction('kv','readwrite').objectStore('kv').delete(key);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});
+        info.count=Math.max(0,info.count-1);info.bytes=Math.max(0,info.bytes-(blob.size||0));
+      }
+      await idbSet(db,cfg.infoKey,info);
+      refresh();
+      return;
+    }
     const tx=db.transaction('kv','readwrite');
     const store=tx.objectStore('kv');
     await new Promise((res,rej)=>{
