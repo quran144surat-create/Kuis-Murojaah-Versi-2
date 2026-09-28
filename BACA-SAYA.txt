@@ -1,0 +1,11 @@
+KUIS MURAJA'AH (PWA)
+
+Unggah SEMUA isi folder ini ke akar repositori GitHub Pages (Settings > Pages > Deploy from branch).
+Buka alamat HTTPS-nya, lalu pasang di layar utama.
+
+Android (Chrome): menu titik tiga > Tambahkan ke layar utama (Instal aplikasi).
+iPhone (Safari): tombol Bagikan > Tambahkan ke Layar Utama.
+
+Buka selalu dari ikon layar utama agar tampil layar penuh.
+Setelah dibuka online sekali, teks dan kuis jalan offline; audio ayat tetap butuh internet.
+Jika mengubah file, naikkan VERSI di sw.js (mis. v2) agar pembaruan sampai ke HP.

@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>Kuis Muraja'ah</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22192%22%20height%3D%22192%22%20rx%3D%2242%22%20fill%3D%22%230E4A3B%22/%3E%3Cpath%20d%3D%22M124%2040a56%2056%200%201%200%200%20112%2044%2044%200%201%201%200-112z%22%20fill%3D%22%23DDBB63%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0E4A3B">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Muraja'ah">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -93,21 +93,6 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
 .quiz-q-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
 #quizSubmitRow{position:sticky;bottom:10px}
 #btnKirimJawaban:disabled{opacity:.45}
-.juz-pick{margin:0 0 14px}
-.juz-sum{appearance:none;display:flex;align-items:center;gap:8px;width:100%;background:var(--field);border:1px solid var(--line2);border-radius:12px;padding:11px 14px;font:14px var(--sans);color:var(--ink);cursor:pointer;text-align:left}
-.juz-sum-l{color:var(--muted);font-size:12px}
-.juz-sum-v{flex:1;font-weight:600}
-.juz-sum svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s}
-.juz-sum[aria-expanded=true] svg{transform:rotate(180deg)}
-.juz-panel{margin-top:10px}
-.juz-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.juz-chip{appearance:none;border:1px solid transparent;background:var(--surface2);color:var(--ink);border-radius:999px;padding:7px 0;font:500 13px var(--sans);cursor:pointer}
-.juz-chip.full{background:var(--ok-soft)}
-.juz-chip.part{border-color:var(--warn)}
-.juz-chip.sel{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
-.juz-tools{display:flex;align-items:center;gap:2px;margin-top:8px;font-size:11px;color:var(--muted)}
-.juz-mini{appearance:none;border:none;background:none;color:var(--primary);font:600 12px var(--sans);padding:4px 6px 4px 0;margin-right:6px;cursor:pointer}
-.juz-legend{margin-left:auto}
 .pill{display:inline-block;background:var(--gold-soft);color:var(--gold-ink);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
 .qori-active-pill{appearance:none;border:none;cursor:pointer;border-radius:99px;padding:4px 12px;font:600 12px var(--sans);flex:none}
 .qori-active-pill.active{background:var(--em);color:var(--on-primary);font-weight:800;cursor:default;box-shadow:0 0 0 3px color-mix(in srgb,var(--em) 25%,transparent),0 0 10px color-mix(in srgb,var(--em) 55%,transparent)}
@@ -132,15 +117,6 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:6px 4px;border-radius:10px;font:600 11px var(--sans);color:var(--muted);cursor:pointer}
 .tab-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
 .tab-item.active{color:var(--primary)}
-.app-block{display:flex;align-items:center;gap:14px;padding:14px 16px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);transition:transform .08s,border-color .2s;-webkit-tap-highlight-color:transparent}
-.app-block:active{transform:scale(.985);border-color:var(--gold)}
-.app-block .app-ic{width:44px;height:44px;border-radius:12px;background:var(--gold-soft);color:var(--gold-ink);display:flex;align-items:center;justify-content:center;flex:none}
-.app-block .app-ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.app-block .app-txt{flex:1;min-width:0}
-.app-block .app-txt b{display:block;font:700 15px var(--sans)}
-.app-block .app-txt small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
-.app-block .app-go{color:var(--muted);display:flex;flex:none}
-.app-block .app-go svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .wrap{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .bstat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .bstat{aspect-ratio:1/1;background:var(--tile);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px}
@@ -336,18 +312,6 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
     <div class="card" id="historyList"></div>
   </div>
 
-  <div id="view-apps" class="hidden">
-    <div class="hero">
-      <h1>App lainnya</h1>
-      <p>Aplikasi pendukung lainnya.</p>
-    </div>
-    <a class="app-block" id="btnQuranOpen" href="https://quran144surat-create.github.io/quran/" target="_blank" rel="noopener noreferrer">
-      <span class="app-ic"><svg viewBox="0 0 24 24"><path d="M12 6.5C10.3 5.3 8 4.8 4 5v13c4-.2 6.3.3 8 1.5 1.7-1.2 4-1.7 8-1.5V5c-4-.2-6.3.3-8 1.5z"/><path d="M12 6.5v13"/></svg></span>
-      <span class="app-txt"><b>Quran</b><small>Baca mushaf 114 surat</small></span>
-      <span class="app-go"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
-    </a>
-  </div>
-
   <div id="view-pengaturan" class="hidden">
     <div class="hero">
       <h1>Pengaturan</h1>
@@ -428,7 +392,6 @@ body.audio-icons-hidden .opt.has-audio{padding-left:16px}
 
 <nav class="tabbar" id="tabbar">
   <button class="tab-item" id="tabBeranda" data-tab="beranda"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6 9.5V20h12V9.5"/></svg><span>Beranda</span></button>
-  <button class="tab-item" id="tabApps" data-tab="apps"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg><span>App lainnya</span></button>
   <button class="tab-item" id="tabPengaturan" data-tab="pengaturan"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1.04 1.56V21a2 2 0 01-4 0v-.09A1.7 1.7 0 008.96 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 004.6 15a1.7 1.7 0 00-1.56-1.04H3a2 2 0 010-4h.09A1.7 1.7 0 004.6 8.96a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008.96 4.6a1.7 1.7 0 001.04-1.56V3a2 2 0 014 0v.09a1.7 1.7 0 001.04 1.56 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0019.4 8.96a1.7 1.7 0 001.56 1.04H21a2 2 0 010 4h-.09a1.7 1.7 0 00-1.56 1.04z"/></svg><span>Pengaturan</span></button>
 </nav>
 
@@ -574,10 +537,9 @@ let QUIZ=null;
 const $=id=>document.getElementById(id);
 const view=name=>{
   if(name!=='quiz')stopAyahAudio();
-  ['loading','beranda','home','quiz','result','history','apps','pengaturan','pengaturan-audio','pengaturan-audio-qori'].forEach(v=>$('view-'+v).classList.toggle('hidden',v!==name));
+  ['loading','beranda','home','quiz','result','history','pengaturan','pengaturan-audio','pengaturan-audio-qori'].forEach(v=>$('view-'+v).classList.toggle('hidden',v!==name));
   const tb=$('tabbar');if(tb)tb.classList.toggle('hidden',name==='loading'||name==='quiz');
   const tBeranda=$('tabBeranda');if(tBeranda)tBeranda.classList.toggle('active',name==='beranda');
-  const tApps=$('tabApps');if(tApps)tApps.classList.toggle('active',name==='apps');
   const tPengaturan=$('tabPengaturan');if(tPengaturan)tPengaturan.classList.toggle('active',name.indexOf('pengaturan')===0);
 };
 
@@ -796,7 +758,6 @@ function startQuiz(){
     const shuffled=pool.slice().sort(()=>Math.random()-0.5).slice(0,n);
     QUIZ={mode,items:shuffled,idx:0,correct:0,detail:[]};
   }
-  QUIZ.owner=historyOwner();
   view('quiz');
   renderQuestion();
 }
@@ -908,7 +869,7 @@ function renderMutasyabihatQuestion(item){
   const before=words.slice(0,range[0]-1).join(' ');
   const after=words.slice(range[1]).join(' ');
   const otherKeys=Object.keys(group.ayah).filter(k=>k!==key);
-  const optsBox=$('quizOptions');optsBox.innerHTML='';
+  const optsBox=$('quizOptions');
   setQuizPlaySoal(g);
   setMushafLink(s,a);
 
@@ -972,9 +933,7 @@ function answer(btn,isCorrect,correctVal,choices,kind){
   }
   if(isCorrect)QUIZ.correct++;
   QUIZ.detail.push({q:QUIZ.items[QUIZ.idx],ok:isCorrect});
-  const quiz=QUIZ;
   setTimeout(()=>{
-    if(QUIZ!==quiz||quiz.aborted)return; // kuis sudah dibatalkan/diganti
     QUIZ.idx++;
     if(QUIZ.idx>=QUIZ.items.length){finishQuiz();}else{renderQuestion();}
   },700);
@@ -992,17 +951,13 @@ function finishQuiz(){
   view('result');
 }
 
-function historyOwner(){
-  return (getAppMode()==='multi'&&hasMultiData()&&ACTIVE_SANTRI)?('santri:'+ACTIVE_SANTRI):'personal';
-}
 function saveHistory(score,total){
   const key='hf-muraja-ah-history';
   let hist=[];try{hist=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){}
   // Simpan ayat global (g) yang dijawab salah, supaya bisa ditampilkan lagi nanti di Riwayat
   const wrong=(QUIZ.detail||[]).filter(d=>!d.ok).map(d=>QUIZ.mode==='mutasyabihat'?d.q.g:d.q);
-  hist.unshift({date:new Date().toISOString(),score,total,mode:QUIZ.mode,level:QUIZ.level||null,wrong,owner:QUIZ.owner||historyOwner()});
-  const cnt={};
-  hist=hist.filter(h=>{const o=h.owner||'personal';cnt[o]=(cnt[o]||0)+1;return cnt[o]<=100;});
+  hist.unshift({date:new Date().toISOString(),score,total,mode:QUIZ.mode,level:QUIZ.level||null,wrong});
+  hist=hist.slice(0,100);
   localStorage.setItem(key,JSON.stringify(hist));
 }
 function modeLabel(h){
@@ -1024,21 +979,14 @@ function toggleHistDetail(i){
 }
 function renderHistory(){
   let hist=[];try{hist=JSON.parse(localStorage.getItem('hf-muraja-ah-history')||'[]');}catch(e){}
-  const owner=historyOwner();
-  hist=hist.filter(h=>(h.owner||'personal')===owner);
-  let who='';
-  if(owner!=='personal'){
-    const sn=SANTRI_LIST&&SANTRI_LIST.santriList&&SANTRI_LIST.santriList.find(x=>x.id===ACTIVE_SANTRI);
-    if(sn&&sn.nama)who='<p class="muted" style="margin:0 0 10px;font-size:13px">Riwayat: '+String(sn.nama).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</p>';
-  }
-  $('historyList').innerHTML = who + (hist.length
+  $('historyList').innerHTML = hist.length
     ? hist.map((h,i)=>{
         const hasDetail=Array.isArray(h.wrong);
         const toggleBtn=hasDetail?`<button type="button" class="hist-toggle" onclick="toggleHistDetail(${i})">Detail</button>`:'';
         return `<div class="hist-row"><span>${new Date(h.date).toLocaleDateString('id-ID')} · ${modeLabel(h)}</span><span>${h.score}/${h.total}${toggleBtn}</span></div>`
           +(hasDetail?`<div id="histDetail${i}" class="hist-detail hidden">${wrongDetailHtml(h.wrong)}</div>`:'');
       }).join('')
-    : '<p class="muted center">Belum ada riwayat kuis.</p>');
+    : '<p class="muted center">Belum ada riwayat kuis.</p>';
 }
 
 /* ================= Setup santri (mode lembaga) ================= */
@@ -1191,65 +1139,6 @@ function fmtBytes(n){
 }
 function makeQoriManager(cfg){
   let running=false, cancel=false;
-  let cached=new Set();
-  const sel=new Set();
-  const DL_ICON='<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>';
-  function juzAyahRange(j){
-    const p1=JUZ_PAGE_START[j-1], p2=(j<30)?JUZ_PAGE_START[j]-1:604;
-    return [PS[p1],PE[p2]];
-  }
-  const btnEl=$(cfg.btnId);
-  const pick=document.createElement('div');pick.className='juz-pick';
-  pick.innerHTML='<button type="button" class="juz-sum" aria-expanded="false"><span class="juz-sum-l">Juz</span><span class="juz-sum-v">Semua 30 juz</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="juz-panel hidden"><div class="juz-grid"></div><div class="juz-tools"><button type="button" class="juz-mini" data-a="all">Pilih semua</button><button type="button" class="juz-mini" data-a="none">Kosongkan</button><span class="juz-legend">hijau lengkap · garis sebagian</span></div></div>';
-  btnEl.parentElement.parentElement.insertBefore(pick,btnEl.parentElement);
-  const grid=pick.querySelector('.juz-grid');
-  const sumBtn=pick.querySelector('.juz-sum'), sumV=pick.querySelector('.juz-sum-v'), panel=pick.querySelector('.juz-panel');
-  function setOpen(open){panel.classList.toggle('hidden',!open);sumBtn.setAttribute('aria-expanded',open?'true':'false');}
-  (window.JUZ_CLOSERS=window.JUZ_CLOSERS||[]).push(()=>setOpen(false));
-  sumBtn.onclick=()=>{const open=panel.classList.contains('hidden');(window.JUZ_CLOSERS||[]).forEach(f=>f());setOpen(open);};
-  function sumText(){
-    const n=sel.size;
-    if(!n||n===30)return 'Semua 30 juz';
-    const a=Array.from(sel).sort((x,y)=>x-y);
-    return n<=4?('Juz '+a.join(', ')):(n+' juz dipilih');
-  }
-  const chips=[];
-  for(let j=1;j<=30;j++){
-    const c=document.createElement('button');c.type='button';c.className='juz-chip';c.textContent=j;
-    c.onclick=()=>{if(running)return;if(sel.has(j))sel.delete(j);else sel.add(j);paint();};
-    grid.appendChild(c);chips.push(c);
-  }
-  pick.querySelector('[data-a=all]').onclick=()=>{if(running)return;for(let j=1;j<=30;j++)sel.add(j);paint();};
-  pick.querySelector('[data-a=none]').onclick=()=>{if(running)return;sel.clear();paint();};
-  function updateBtnLabels(){
-    const part=sel.size>0&&sel.size<30;
-    btnEl.innerHTML=DL_ICON+(part?'Unduh Juz Terpilih':'Unduh Audio 30 Juz');
-    $(cfg.delBtnId).textContent=part?'Hapus Juz Terpilih':'Hapus audio tersimpan';
-  }
-  function paint(){
-    sumV.textContent=sumText();
-    chips.forEach((c,i)=>{
-      const j=i+1,r=juzAyahRange(j);let n=0;
-      for(let g=r[0];g<=r[1];g++)if(cached.has(g))n++;
-      const t=r[1]-r[0]+1;
-      c.classList.toggle('sel',sel.has(j));
-      c.classList.toggle('full',n===t);
-      c.classList.toggle('part',n>0&&n<t);
-      c.setAttribute('aria-pressed',sel.has(j)?'true':'false');
-      c.title='Juz '+j+' · '+n+'/'+t+' ayat tersimpan';
-    });
-    if(!running)updateBtnLabels();
-  }
-  async function getCached(){
-    try{
-      const db=await openDB();
-      return await new Promise((res,rej)=>{
-        const req=db.transaction('kv','readonly').objectStore('kv').getAllKeys();
-        req.onsuccess=()=>{const o=new Set();req.result.forEach(k=>{if(typeof k==='string'&&k.indexOf(cfg.keyPrefix)===0){const g=+k.slice(cfg.keyPrefix.length);if(g)o.add(g);}});res(o);};
-        req.onerror=()=>rej(req.error);
-      });
-    }catch(e){return new Set();}
-  }
   async function getInfo(){
     try{const db=await openDB();return (await idbGet(db,cfg.infoKey))||{count:0,bytes:0};}
     catch(e){return {count:0,bytes:0};}
@@ -1257,12 +1146,11 @@ function makeQoriManager(cfg){
   async function refresh(){
     const total=AYTOT;
     const info=await getInfo();
-    cached=await getCached();
     const statusEl=$(cfg.statusId), btn=$(cfg.btnId), delBtn=$(cfg.delBtnId);
     if(!statusEl||!btn)return;
     delBtn.classList.toggle('hidden', info.count===0 || running);
     if(running)return;
-    paint();
+    btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16"/></svg>Unduh Audio 30 Juz';
     statusEl.classList.remove('none','partial','full');
     btn.disabled=false;
     if(info.count===0){
@@ -1278,12 +1166,9 @@ function makeQoriManager(cfg){
   }
   async function download(){
     if(running)return;
-    const ayat=[];
-    const juzList=sel.size?Array.from(sel).sort((a,b)=>a-b):Array.from({length:30},(_,i)=>i+1);
-    juzList.forEach(j=>{const r=juzAyahRange(j);for(let g=r[0];g<=r[1];g++)ayat.push(g);});
+    const ayat=[];for(let g=1;g<=AYTOT;g++)ayat.push(g);
     if(!ayat.length)return;
     running=true;cancel=false;
-    setOpen(false);
     const btn=$(cfg.btnId), bar=$(cfg.barId), fill=$(cfg.fillId), statusEl=$(cfg.statusId);
     btn.textContent='Batalkan';
     $(cfg.delBtnId).classList.add('hidden');
@@ -1317,21 +1202,6 @@ function makeQoriManager(cfg){
   }
   async function del(){
     const db=await openDB();
-    if(sel.size){
-      let info=(await idbGet(db,cfg.infoKey))||{count:0,bytes:0};
-      const keys=[];
-      sel.forEach(j=>{const r=juzAyahRange(j);for(let g=r[0];g<=r[1];g++)keys.push(g);});
-      for(const g of keys){
-        const key=cfg.keyPrefix+g;
-        const blob=await idbGet(db,key);
-        if(!blob)continue;
-        await new Promise((res,rej)=>{const q=db.transaction('kv','readwrite').objectStore('kv').delete(key);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});
-        info.count=Math.max(0,info.count-1);info.bytes=Math.max(0,info.bytes-(blob.size||0));
-      }
-      await idbSet(db,cfg.infoKey,info);
-      refresh();
-      return;
-    }
     const tx=db.transaction('kv','readwrite');
     const store=tx.objectStore('kv');
     await new Promise((res,rej)=>{
@@ -1421,12 +1291,11 @@ document.querySelectorAll('input[name=level]').forEach(r=>r.addEventListener('ch
 $('btnStart').onclick=startQuiz;
 $('btnHistory').onclick=()=>{renderHistory();view('history');};
 $('btnHistBack').onclick=()=>view('home');
-$('btnQuit').onclick=()=>{if(QUIZ)QUIZ.aborted=true;view('home');};
+$('btnQuit').onclick=()=>view('home');
 $('btnKirimJawaban').onclick=submitAnswer;
 $('btnRetry').onclick=startQuiz;
 $('btnHome').onclick=()=>view('home');
 $('tabBeranda').onclick=()=>view('beranda');
-$('tabApps').onclick=()=>view('apps');
 $('tabPengaturan').onclick=()=>view('pengaturan');
 $('rowAudio').onclick=()=>view('pengaturan-audio');
 $('rowDownloadMushaf').onclick=()=>{location.href='download-juz.html';};
@@ -1482,9 +1351,10 @@ function initOfflineStatus(){
 }
 </script>
 <script>
-/* PWA: daftarkan service worker agar aplikasi bisa dibuka offline (hanya di https/localhost) */
-if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
 }
 </script>
 </body>
