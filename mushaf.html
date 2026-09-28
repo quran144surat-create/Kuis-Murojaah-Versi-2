@@ -10,7 +10,8 @@
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
 button,select{font:600 13.5px system-ui,sans-serif;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 12px}
-h1{font-size:16px;margin:0;flex:1}
+h1{font-size:16px;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header select{min-width:0;max-width:30vw;padding:9px 6px}
 .pill{background:var(--gold);color:var(--goldink);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
 /* Bilah disembunyikan; muncul saat layar diketuk */
 header,#ind{position:fixed;left:0;right:0;z-index:5;background:var(--surface);opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
@@ -29,6 +30,7 @@ body.ui header,body.ui #ind{transform:none;opacity:1;pointer-events:auto}
   <button id="back">› Kuis</button>
   <h1 id="ttl">Juz 1</h1><span class="pill" id="info" hidden></span>
   <select id="jsel" aria-label="Juz"></select>
+  <select id="ssel" aria-label="Surat"></select>
   <select id="sel" aria-label="Halaman"></select>
 </header>
 <main id="track"></main>
@@ -46,7 +48,13 @@ const q=new URLSearchParams(location.search),s=+q.get('s'),a=+q.get('a');
 const ayahPage=s&&a?pageOfAyah(s,a):0;
 let cur=Math.min(Math.max(ayahPage||+q.get('p')||1,1),T);
 if(ayahPage){$('info').textContent='QS '+s+':'+a;$('info').hidden=false}
+const SN="Al-Fatihah|Al-Baqarah|Ali 'Imran|An-Nisa'|Al-Ma'idah|Al-An'am|Al-A'raf|Al-Anfal|At-Taubah|Yunus|Hud|Yusuf|Ar-Ra'd|Ibrahim|Al-Hijr|An-Nahl|Al-Isra'|Al-Kahfi|Maryam|Taha|Al-Anbiya'|Al-Hajj|Al-Mu'minun|An-Nur|Al-Furqan|Asy-Syu'ara'|An-Naml|Al-Qasas|Al-'Ankabut|Ar-Rum|Luqman|As-Sajdah|Al-Ahzab|Saba'|Fatir|Yasin|As-Saffat|Sad|Az-Zumar|Gafir|Fussilat|Asy-Syura|Az-Zukhruf|Ad-Dukhan|Al-Jasiyah|Al-Ahqaf|Muhammad|Al-Fath|Al-Hujurat|Qaf|Az-Zariyat|At-Tur|An-Najm|Al-Qamar|Ar-Rahman|Al-Waqi'ah|Al-Hadid|Al-Mujadalah|Al-Hasyr|Al-Mumtahanah|As-Saff|Al-Jumu'ah|Al-Munafiqun|At-Tagabun|At-Talaq|At-Tahrim|Al-Mulk|Al-Qalam|Al-Haqqah|Al-Ma'arij|Nuh|Al-Jinn|Al-Muzzammil|Al-Muddassir|Al-Qiyamah|Al-Insan|Al-Mursalat|An-Naba'|An-Nazi'at|'Abasa|At-Takwir|Al-Infitar|Al-Mutaffifin|Al-Insyiqaq|Al-Buruj|At-Tariq|Al-A'la|Al-Gasyiyah|Al-Fajr|Al-Balad|Asy-Syams|Al-Lail|Ad-Duha|Asy-Syarh|At-Tin|Al-'Alaq|Al-Qadr|Al-Bayyinah|Az-Zalzalah|Al-'Adiyat|Al-Qari'ah|At-Takasur|Al-'Asr|Al-Humazah|Al-Fil|Quraisy|Al-Ma'un|Al-Kausar|Al-Kafirun|An-Nasr|Al-Lahab|Al-Ikhlas|Al-Falaq|An-Nas".split('|');
+// cum[i] = jumlah ayat sebelum surat ke-(i+1); dipakai memetakan nomor ayat global -> surat
+const cum=[];C.ay.reduce((x,y,i)=>(cum[i]=x,x+y),0);
+const TA=C.ay.reduce((x,y)=>x+y,0);
+const surahOf=g=>{let lo=0,hi=C.ay.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(cum[m]<g)lo=m;else hi=m-1}return lo+1};
 for(let j=1;j<=30;j++)$('jsel').add(new Option('Juz '+j,j));
+SN.forEach((n,i)=>$('ssel').add(new Option((i+1)+'. '+n,i+1)));
 for(let i=1;i<=T;i++)$('sel').add(new Option('Hal. '+i,i));
 
 const track=$('track'),mq=matchMedia('(orientation:landscape) and (min-width:600px)');
@@ -64,6 +72,9 @@ function unloadFar(){loaded.forEach(h=>{if(Math.abs(+h.dataset.p-cur)>12){h.repl
 function setCur(n){
   cur=n;$('sel').value=n;
   const j=juzOf(n);$('jsel').value=j;$('ttl').textContent='Juz '+j;
+  // surat yang tampil di halaman aktif; pilihan pengguna dipertahankan bila masih ada di halaman ini
+  const e=spread&&n<T?n+1:n,s1=surahOf(C.ps[n-1]),s2=surahOf(e<T?C.ps[e]-1:TA),sv=+$('ssel').value;
+  $('ssel').value=(sv>=s1&&sv<=s2)?sv:s1;
   $('ind').textContent='Hal. '+(spread&&n<T?n+'–'+(n+1):n)+' / '+T;
   const hasAyah=ayahPage&&(ayahPage===n||(spread&&ayahPage===n+1));
   history.replaceState(null,'','?p='+n+(hasAyah?'&s='+s+'&a='+a:''));
@@ -99,6 +110,7 @@ let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>goto(cu
 
 $('sel').onchange=e=>goto(+e.target.value,false);
 $('jsel').onchange=e=>goto(C.juzStart[+e.target.value-1],false);
+$('ssel').onchange=e=>goto(pageOfAyah(+e.target.value,1),false);
 
 // Ketuk layar -> tampilkan/sembunyikan bilah. Geser halaman tidak memicu ketukan.
 let firstTap=true;
