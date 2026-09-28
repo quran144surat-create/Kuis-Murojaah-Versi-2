@@ -1,6 +1,7 @@
 /* Service worker Kuis Muraja'ah — membuat aplikasi bisa dibuka offline.
    Naikkan VERSION setiap kali index.html diubah agar pengguna dapat versi terbaru. */
-const VERSION = 'v1';
+const VERSION = 'v2';
+const APP_ROOT = new URL('./', self.location).pathname;
 const SHELL_CACHE = 'murajaah-shell-' + VERSION;
 const FONT_CACHE = 'murajaah-fonts-v1';
 const SHELL = [
@@ -51,15 +52,30 @@ self.addEventListener('fetch', event => {
   // Audio & CDN lain: biarkan browser/aplikasi yang menangani (audio disimpan aplikasi di IndexedDB).
   if (url.origin !== self.location.origin) return;
 
-  // Halaman: coba jaringan dulu (agar update cepat terlihat), jika offline pakai cache.
+  // Halaman: coba jaringan dulu; jika offline pakai cache halaman ITU SENDIRI.
+  // (juz-N.html, download-juz.html, dll. tidak boleh dialihkan ke halaman kuis.)
   if (req.mode === 'navigate') {
+    const isApp = url.pathname === APP_ROOT || url.pathname === APP_ROOT + 'index.html';
     event.respondWith(
       fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(SHELL_CACHE).then(c => c.put('./index.html', copy));
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(SHELL_CACHE).then(c => c.put(isApp ? './index.html' : req, copy));
+        }
         return res;
       }).catch(() =>
-        caches.match('./index.html').then(hit => hit || caches.match('./'))
+        caches.match(req, { ignoreSearch: true }).then(hit => {
+          if (hit) return hit;
+          if (isApp) return caches.match('./index.html');
+          return new Response(
+            '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+            '<body style="font-family:sans-serif;padding:24px;line-height:1.6;background:#F2F1E7;color:#10231D">' +
+            '<h2>Halaman ini belum tersimpan offline</h2>' +
+            '<p>Sambungkan internet dan buka halaman ini sekali, atau unduh dulu lewat menu <b>Download Mushaf per Juz</b>. Setelah itu bisa dibuka offline.</p>' +
+            '<p><a href="' + APP_ROOT + '">&larr; Kembali ke Kuis</a></p></body>',
+            { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+          );
+        })
       )
     );
     return;
