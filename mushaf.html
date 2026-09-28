@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E4A3B">
+<title>Mushaf</title>
+<style>
+:root{--bg:#F2F1E7;--surface:#FBFAF4;--ink:#10231D;--muted:#586C63;--line:#DBDED0;--primary:#0E4A3B;--on:#F8F5E8;--gold:#EDE1BC;--goldink:#7A5D12}
+@media(prefers-color-scheme:dark){:root{--bg:#0A1512;--surface:#101F1A;--ink:#ECE8D8;--muted:#9DB0A6;--line:#203429;--primary:#1F7A60;--on:#F4F1E4;--gold:#3A3219;--goldink:#D9B96B}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+button,select{font:600 13.5px system-ui,sans-serif;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 12px}
+h1{font-size:16px;margin:0;flex:1}
+.pill{background:var(--gold);color:var(--goldink);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
+/* Bilah disembunyikan; muncul saat layar diketuk */
+header,#ind{position:fixed;left:0;right:0;z-index:5;background:var(--surface);opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+header{top:0;transform:translateY(-100%);display:flex;direction:rtl;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px))}
+#ind{bottom:0;transform:translateY(100%);text-align:center;font-size:12.5px;font-weight:600;color:var(--muted);border-top:1px solid var(--line);padding:5px 0 calc(5px + env(safe-area-inset-bottom,0px))}
+body.ui header,body.ui #ind{transform:none;opacity:1;pointer-events:auto}
+#track{position:fixed;inset:0;display:flex;direction:rtl;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+#track::-webkit-scrollbar{display:none}
+.pg{flex:0 0 100%;width:100%;height:100%;position:relative;scroll-snap-align:center;scroll-snap-stop:always;display:flex;direction:rtl;text-align:center;color:var(--muted);padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.h{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:center;justify-content:center}
+.h img{width:100%;height:100%;object-fit:contain}
+.sp .h:nth-child(1) img{object-position:left center}
+.sp .h:nth-child(2) img{object-position:right center}
+.sp::after{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 14px);width:28px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(0,0,0,.14),transparent)}
+.msg{max-width:340px;padding:0 16px;direction:ltr}
+</style></head><body>
+<header>
+  <button id="back">› Kuis</button>
+  <h1 id="ttl">Juz 1</h1><span class="pill" id="info" hidden></span>
+  <select id="jsel" aria-label="Juz"></select>
+  <select id="sel" aria-label="Halaman"></select>
+</header>
+<main id="track"></main>
+<div id="ind"></div>
+<script src="config.js"></script>
+<script>
+const C=CFG,$=id=>document.getElementById(id),T=C.total,src=C.src;
+const juzOf=p=>{for(let j=29;j>=0;j--)if(p>=C.juzStart[j])return j+1;return 1};
+function pageOfAyah(s,a){
+  const g=C.ay.slice(0,s-1).reduce((x,y)=>x+y,0)+a;let lo=0,hi=T-1;
+  while(lo<hi){const m=(lo+hi+1)>>1;if(C.ps[m]<=g)lo=m;else hi=m-1}
+  return lo+1;
+}
+const q=new URLSearchParams(location.search),s=+q.get('s'),a=+q.get('a');
+const ayahPage=s&&a?pageOfAyah(s,a):0;
+let cur=Math.min(Math.max(ayahPage||+q.get('p')||1,1),T);
+if(ayahPage){$('info').textContent='QS '+s+':'+a;$('info').hidden=false}
+for(let j=1;j<=30;j++)$('jsel').add(new Option('Juz '+j,j));
+for(let i=1;i<=T;i++)$('sel').add(new Option('Hal. '+i,i));
+
+const track=$('track'),mq=matchMedia('(orientation:landscape) and (min-width:600px)');
+let spread=mq.matches,cells={},loaded=new Set(),loadObs,curObs;
+const start=n=>spread?(n%2?n:n-1):n;
+
+function loadImg(h){
+  if(h.dataset.done)return;h.dataset.done=1;loaded.add(h);const n=+h.dataset.p;
+  const im=new Image();im.alt='Halaman '+n;
+  im.onerror=()=>{h.innerHTML='<div class="msg">Gambar halaman '+n+' tidak ditemukan.<br>Yang dicari: <code dir="ltr">'+src(n)+'</code><br>Cocokkan nama folder dan file di repo dengan <code dir="ltr">config.js</code>, atau kalau sedang offline, unduh dulu lewat Pengaturan › Download Mushaf per Juz</div>'};
+  im.src=src(n);h.appendChild(im);
+}
+// buang gambar yang sudah jauh dari halaman aktif supaya memori tidak menumpuk
+function unloadFar(){loaded.forEach(h=>{if(Math.abs(+h.dataset.p-cur)>12){h.replaceChildren();delete h.dataset.done;loaded.delete(h)}})}
+function setCur(n){
+  cur=n;$('sel').value=n;
+  const j=juzOf(n);$('jsel').value=j;$('ttl').textContent='Juz '+j;
+  $('ind').textContent='Hal. '+(spread&&n<T?n+'–'+(n+1):n)+' / '+T;
+  const hasAyah=ayahPage&&(ayahPage===n||(spread&&ayahPage===n+1));
+  history.replaceState(null,'','?p='+n+(hasAyah?'&s='+s+'&a='+a:''));
+  unloadFar();
+}
+function goto(n,smooth){
+  const c=cells[start(n)];
+  if(c)c.scrollIntoView({behavior:smooth?'smooth':'instant',inline:'center',block:'nearest'});
+}
+// Urutan DOM = urutan baca Arab (direction:rtl): elemen pertama ada di paling KANAN.
+// Mode 2 halaman: ganjil di kanan, genap di kiri (1|2, 3|4, ...).
+function build(){
+  loadObs&&loadObs.disconnect();curObs&&curObs.disconnect();
+  track.replaceChildren();cells={};loaded.clear();
+  const step=spread?2:1,frag=document.createDocumentFragment();
+  for(let i=1;i<=T;i+=step){
+    const d=document.createElement('div');d.className='pg'+(spread?' sp':'');d.dataset.p=i;
+    for(let n=i;n<i+step&&n<=T;n++){const h=document.createElement('div');h.className='h';h.dataset.p=n;d.appendChild(h)}
+    cells[i]=d;frag.appendChild(d);
+  }
+  track.appendChild(frag);
+  loadObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.h').forEach(loadImg)}),{root:track,rootMargin:'0px 100% 0px 100%'});
+  curObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setCur(+e.target.dataset.p)}),{root:track,threshold:0.6});
+  const c=start(cur);
+  cells[c].querySelectorAll('.h').forEach(loadImg);
+  setCur(c);goto(c,false);
+  for(const k in cells){loadObs.observe(cells[k]);curObs.observe(cells[k])}
+  requestAnimationFrame(()=>goto(cur,false));
+}
+build();
+mq.addEventListener('change',()=>{spread=mq.matches;build()});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>goto(cur,false),150)});
+
+$('sel').onchange=e=>goto(+e.target.value,false);
+$('jsel').onchange=e=>goto(C.juzStart[+e.target.value-1],false);
+
+// Ketuk layar -> tampilkan/sembunyikan bilah. Geser halaman tidak memicu ketukan.
+let firstTap=true;
+track.addEventListener('click',e=>{
+  if(e.target.closest('button,select'))return;
+  document.body.classList.toggle('ui');
+  if(firstTap&&matchMedia('(pointer:coarse)').matches&&document.fullscreenEnabled&&!document.fullscreenElement)
+    document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(()=>{});
+  firstTap=false;
+});
+// Dibuka di tab baru (target=_blank) -> tutup tab ini, kuis di tab sebelumnya tetap di soal yang sama.
+$('back').onclick=()=>{
+  if(history.length<=1){window.close();setTimeout(()=>{location.href='index.html'},300)}
+  else history.back();
+};
+// Panah keyboard: kiri = berikutnya (searah mushaf Arab)
+addEventListener('keydown',e=>{
+  const st=spread?2:1;
+  if(e.key==='ArrowLeft'&&cur+st<=T)goto(cur+st,true);
+  if(e.key==='ArrowRight'&&cur-st>=1)goto(cur-st,true);
+});
+if(location.protocol.startsWith('http')&&navigator.serviceWorker)navigator.serviceWorker.register('sw.js');
+</script></body></html>
