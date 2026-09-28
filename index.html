@@ -869,7 +869,7 @@ function renderMutasyabihatQuestion(item){
   const before=words.slice(0,range[0]-1).join(' ');
   const after=words.slice(range[1]).join(' ');
   const otherKeys=Object.keys(group.ayah).filter(k=>k!==key);
-  const optsBox=$('quizOptions');
+  const optsBox=$('quizOptions');optsBox.innerHTML='';
   setQuizPlaySoal(g);
   setMushafLink(s,a);
 
@@ -933,7 +933,9 @@ function answer(btn,isCorrect,correctVal,choices,kind){
   }
   if(isCorrect)QUIZ.correct++;
   QUIZ.detail.push({q:QUIZ.items[QUIZ.idx],ok:isCorrect});
+  const quiz=QUIZ;
   setTimeout(()=>{
+    if(QUIZ!==quiz||quiz.aborted)return; // kuis sudah dibatalkan/diganti
     QUIZ.idx++;
     if(QUIZ.idx>=QUIZ.items.length){finishQuiz();}else{renderQuestion();}
   },700);
@@ -1291,7 +1293,7 @@ document.querySelectorAll('input[name=level]').forEach(r=>r.addEventListener('ch
 $('btnStart').onclick=startQuiz;
 $('btnHistory').onclick=()=>{renderHistory();view('history');};
 $('btnHistBack').onclick=()=>view('home');
-$('btnQuit').onclick=()=>view('home');
+$('btnQuit').onclick=()=>{if(QUIZ)QUIZ.aborted=true;view('home');};
 $('btnKirimJawaban').onclick=submitAnswer;
 $('btnRetry').onclick=startQuiz;
 $('btnHome').onclick=()=>view('home');
